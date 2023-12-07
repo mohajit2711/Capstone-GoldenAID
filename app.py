@@ -128,6 +128,8 @@ def example():
     else:
         # Simulate an unexpected server error
         raise InternalServerError()
+
+# Cleanup ChromaDB data
 # def cleanup_chroma_data():
 #     try:
 #         if 'vector_db' in globals():
@@ -164,3 +166,5 @@ if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_DIR']):
         os.makedirs(app.config['UPLOAD_DIR'])
     app.run(host='0.0.0.0', port=8080, debug=True)
+
+
