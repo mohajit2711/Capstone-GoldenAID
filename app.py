@@ -3,7 +3,6 @@ import re
 import atexit  
 import requests
 from werkzeug.utils import secure_filename
-# from awsS3 import upload_file, downloadfile
 from dotenv import load_dotenv
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import TokenTextSplitter
@@ -43,6 +42,7 @@ def handle_idk_response():
         return 'Response not matched', 400
     except Exception as e:
         return f'Error handling response: {str(e)}', 500
+# Register the cleanup function to run on app exit
 
 def setup_bot(filename = 'uploads\GoldenAidKB.pdf'):
     # load pdf
@@ -67,48 +67,17 @@ def setup_bot(filename = 'uploads\GoldenAidKB.pdf'):
                                     persist_directory=persist_directory
                                     )
     vector_db.persist()
-
     # Q&A 
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     qa_bot = ConversationalRetrievalChain.from_llm(
                 OpenAI(temperature=0, model_name="gpt-3.5-turbo"), 
-                vector_db.as_retriever())
+                vector_db.as_retriever(), 
+                memory=memory)
     return qa_bot
+
+# Setting up with the default PDF initially
 qa_bot = setup_bot()
 chat_history = []
-
-upload_folder = "uploads/"
-if not os.path.exists(upload_folder):
-    os.mkdir(upload_folder)
-
-app.config['UPLOAD_FOLDER'] = upload_folder
-
-# @app.route('/upload_pdf', methods=['POST'])
-# def upload_pdf():
-#     # pdf = request.files
-#     # print(pdf)
-#     global qa_bot, chat_history
-#     file_format = app.config['ALLOWED_EXT']
-#     if file_format not in request.files:
-#         return 'No file part'
-#     file = request.files[file_format]
-#     if file.filename == '':
-#         return 'No selected file'
-#     i=0    
-#     def allowed_file(filename, allowed_ext):
-#         return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_ext
-    
-#     if file and allowed_file(file.filename, {'pdf'}):
-#         filename = os.path.join(app.config['UPLOAD_DIR'], file.filename)
-#         #saving file to system which is uploaded
-#         file.save(filename)
-#         qa_bot = setup_bot(filename)
-#         chat_history = []  # reset chat history if a new document is uploaded
-#         return 'PDF uploaded and processed!'
-#     else:
-#         return 'Invalid file type. Only PDFs are allowed.'
-
-
 @app.route('/example', methods=['GET', 'POST'])
 def example():
     # Simulate different scenarios by raising exceptions
@@ -128,21 +97,17 @@ def example():
     else:
         # Simulate an unexpected server error
         raise InternalServerError()
+def cleanup_chroma_data():
+    try:
+        if 'vector_db' in globals():
+            vector_db.delete_all_documents()
+    except Exception as e:
+        print(f"Error cleaning up Chroma data: {str(e)}")
 
-# Cleanup ChromaDB data
-# def cleanup_chroma_data():
-#     try:
-#         if 'vector_db' in globals():
-#             vector_db.delete_all_documents()
-#     except Exception as e:
-#         print(f"Error cleaning up Chroma data: {str(e)}")
-
-# atexit.register(cleanup_chroma_data)
+atexit.register(cleanup_chroma_data)
 @app.route('/')
 def index():
-    return render_template('index2.html')
-
-
+    return render_template('index.html')
 @app.route('/get_response', methods=['GET','POST'])    
 def get_response():
     global chat_history
@@ -150,6 +115,8 @@ def get_response():
     message = request.json['message']
     message1 = "Please answer politely and strictly in english only."
     message3 = message +" "+ message1
+
+    # Using your chatbot logic to generate a response
     response = qa_bot({"question": message3, "chat_history": chat_history})
     print("Hi")
     print(message)
@@ -166,5 +133,3 @@ if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_DIR']):
         os.makedirs(app.config['UPLOAD_DIR'])
     app.run(host='0.0.0.0', port=8080, debug=True)
-
-

@@ -3,40 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Natural Language Document Query</title>
+    <title>GoldenAID - Emergency Medical First Aid Chatbot</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Your Custom CSS -->
-    <link rel="stylesheet" href="static/main.css">
+    <!-- Custom CSS for GoldenAID -->
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
+
+        .container {
+            color: #343a40; /* Dark gray text color */
+        }
+
+        .card-header {
+            background-color: #ffc107; /* Yellow header background */
+            color: #343a40; /* Dark gray header text color */
+        }
+
+        .card-body, .card-footer {
+            background-color: #ffffff; /* White body and footer background */
+            color: #343a40; /* Dark gray text color */
+        }
+
+        #chat-box {
+            border: 1px solid #ffc107; /* Yellow border for chat box */
+        }
+
+        #user-input {
+            border-color: #ffc107; /* Yellow border for user input */
+        }
+
+        .btn-outline-secondary {
+            color: #ffc107; /* Yellow color for "Choose File" button text */
+            border-color: #ffc107; /* Yellow border for "Choose File" button */
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Blue background for "Upload PDF" button */
+            border-color: #007bff; /* Blue border for "Upload PDF" button */
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Green background for "Send" button */
+            border-color: #28a745; /* Green border for "Send" button */
+        }
+    </style>
 </head>
 <body>
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Natural Language Document Query</h1>
+    <h1 class="text-center mb-4">GoldenAID - Emergency Medical First Aid Chatbot</h1>
 
-    <!-- PDF upload section -->
-    <div class="card mb-3">
-        <div class="card-header">Upload a PDF</div>
-        <div class="card-body">
-            <input type="file" id="pdf-upload" accept=".pdf" style="display: none;">
-            <div class="mb-2 d-flex align-items-center">
-                <label for="pdf-upload" class="btn btn-outline-secondary mr-2">Choose File</label>
-                <span id="selected-filename">No file selected.</span>
-            </div>
-            <div class="mt-2">
-                <button onclick="uploadPDF()" class="btn btn-primary">Upload PDF</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Document Query interface -->
     <div class="card">
-        <div class="card-header">Query Interface</div>
+        <div class="card-header">Chat Interface</div>
         <div class="card-body" id="chat-box" style="height: 300px; overflow-y: scroll;">
             <!-- Chat messages will appear here -->
         </div>
         <div class="card-footer">
-            <textarea id="user-input" placeholder="Type your query here..." class="form-control mb-2"></textarea>
+            <textarea id="user-input" placeholder="Type your emergency medical query here..." class="form-control mb-2"></textarea>
             <button onclick="sendMessage()" class="btn btn-success">Send</button>
         </div>
     </div>
